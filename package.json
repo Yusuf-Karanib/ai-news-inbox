@@ -1,0 +1,8 @@
+{
+  "name": "yusuf-ai-news-inbox",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "supabase": "^2.117.0"
+  }
+}

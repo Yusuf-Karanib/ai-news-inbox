@@ -1,0 +1,51 @@
+# Minimum checks before relying on the brief
+
+- A valid RSS feed produces items.
+- A broken or slow feed does not stop the other feeds.
+- Duplicate links are stored and sent only once.
+- Two runs for the same time slot started together do not create two briefs.
+- A second run after one slot succeeds exits without sending again.
+- A successful morning run does not block the evening run.
+- The schedules represent 7 AM and 7 PM UAE time, each with two retries.
+- Titles containing `<`, `>`, `&`, or quotes display safely in Telegram.
+- A wrong cron secret is rejected.
+- A wrong Telegram webhook secret is rejected.
+- Ratings from another Telegram account are rejected.
+- Every card clearly says whether it is AI, world, UAE, opportunity, security, robotics, or tech news.
+- Default cards contain a short beginner explanation and a source link.
+- Short and full cards do not display status, action, importance, why-for-Yusuf, or repeated interest prompts.
+- Opportunity cards retain one short reminder to check application details.
+- Common jargon such as agentic AI and edge AI is changed into beginner wording.
+- Full story expands the same stored message and Short version collapses it.
+- A `full story` reply works only when replying to a stored news message.
+- A story callback's item ID must match that Telegram message ID.
+- More like this and Less like this save absolute, retry-safe preferences.
+- `/more`, `/less`, `/mute`, `/unmute`, and `/interests` work only for the allowed user and chat.
+- A screenshot without a useful caption asks for a short explanation and is never downloaded.
+- A bare unknown URL is not fetched by the webhook.
+- `/news`, `/news Codex`, and `get me more Claude news` start on-demand searches.
+- On-demand queries fetch only fixed allowlisted sources and never a supplied URL.
+- Duplicate Telegram updates cannot repeat the same search.
+- Only four searches can start per hour, and each sends at most five cards.
+- One failed or slow source does not discard results from working sources.
+- Search cards are marked sent so scheduled briefs do not repeat them.
+- Scheduled and requested-news workers must claim a story before sending it.
+- A lost Telegram response is not immediately retried as a second `sendMessage`.
+- Muted topics are removed from old unsent items as well as new candidates.
+- A full brief selects one real opportunity before all urgent stories.
+- Without a current opportunity, a full brief stops at nine instead of using filler.
+- Ordinary scheduled stories need importance 3 or higher; opportunity items may use importance 2.
+- Resolved or routine outages and generic technical tutorials are excluded.
+- Major AI announcements and major world-political events remain eligible.
+- A readable AI publisher gets a place when it has valuable news.
+- A single source supplies at most two cards, and security supplies at most one.
+- A muted technical-news topic does not accidentally hide a matching internship.
+- Available Claude, OpenAI/Codex, NVIDIA/hardware, Grok, UAE, and other categories are included only when worthwhile.
+- Missing categories are replaced with stronger stories, and the brief never exceeds ten.
+- Weak world news never enters merely to fill a slot.
+- Expanded text stays within Telegram's 4,096-character limit.
+- Telegram timeouts and rate limits retry no more than three times.
+- A failed delivery does not mark the daily run successful.
+- Catch-up never searches farther back than seven days.
+- A quiet day and a total feed failure are stored differently.
+- A final scan finds no real tokens or passwords in the package.

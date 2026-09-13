@@ -1,0 +1,9 @@
+project_id = "telegram-news-free-supabase"
+
+[functions.daily-news]
+enabled = true
+verify_jwt = false
+
+[functions.telegram-feedback]
+enabled = true
+verify_jwt = false

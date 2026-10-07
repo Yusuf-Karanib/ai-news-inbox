@@ -406,6 +406,9 @@ test("a new advisory is not rejected just because its CVE number is older", () =
   );
   assert.ok(old);
   assert.ok(current);
+  assert.equal(old.is_opportunity, false);
+  assert.equal(current.is_opportunity, false);
+  assert.ok(!current.topic_tags.includes("career_opportunities"));
 });
 
 test("small sanctions or vague peace-talk stories are not major world news", () => {

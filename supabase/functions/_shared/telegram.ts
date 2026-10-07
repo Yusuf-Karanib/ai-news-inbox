@@ -63,6 +63,10 @@ const TECH_TOPICS = new Set([
   "docker",
   "react_nextjs",
 ]);
+const SECURITY_NEWS_SOURCE_IDS = new Set([
+  "aws-security-bulletins",
+  "docker-security-announcements",
+]);
 
 const SIMPLE_PHRASES: ReadonlyArray<readonly [RegExp, string]> = [
   [
@@ -134,13 +138,21 @@ function hasAny(topics: Set<string>, wanted: Set<string>): boolean {
 }
 
 export function newsTypeLabel(
-  item: Pick<NewsItemRow, "topic_tags" | "is_opportunity" | "action">,
+  item: Pick<
+    NewsItemRow,
+    "source_id" | "topic_tags" | "is_opportunity" | "action"
+  >,
 ): string {
   const topics = new Set<string>(item.topic_tags);
   const isUae = hasAny(topics, UAE_TOPICS);
   const isAi = hasAny(topics, AI_TOPICS);
   const isOpportunity = hasAny(topics, OPPORTUNITY_TOPICS) ||
     (item.is_opportunity && item.action === "investigate_further");
+
+  if (
+    SECURITY_NEWS_SOURCE_IDS.has(item.source_id) ||
+    (topics.has("general_tech_security") && !isOpportunity)
+  ) return "Security News";
 
   if (isUae && isOpportunity) return "UAE Opportunity";
   if (isOpportunity) return "Opportunity";
@@ -160,7 +172,6 @@ export function newsTypeLabel(
     return "AI News";
   }
 
-  if (topics.has("general_tech_security")) return "Security News";
   if (topics.has("robotics_ros2")) return "Robotics News";
   if (hasAny(topics, TECH_TOPICS)) return "Tech News";
   return "Tech News";

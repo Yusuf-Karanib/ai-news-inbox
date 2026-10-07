@@ -41,8 +41,10 @@ const removedCardLabels =
 function typeFor(
   topicTags: TopicId[],
   isOpportunity = false,
+  sourceId = "test-source",
 ): string {
   return newsTypeLabel({
+    source_id: sourceId,
     topic_tags: topicTags,
     is_opportunity: isOpportunity,
     action: isOpportunity ? "investigate_further" : "save_for_later",
@@ -57,6 +59,17 @@ test("common AI jargon is changed into beginner wording", () => {
   assert.match(result, /directly on a device/);
   assert.doesNotMatch(result, /agentic|at the edge/i);
   assert.ok(result.length <= 320);
+});
+
+test("a security feed cannot be labelled as an opportunity", () => {
+  assert.equal(
+    typeFor(
+      ["general_tech_security", "career_opportunities"],
+      true,
+      "aws-security-bulletins",
+    ),
+    "Security News",
+  );
 });
 
 test("common AI business and research phrases are changed into beginner wording", () => {

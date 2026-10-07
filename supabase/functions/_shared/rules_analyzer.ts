@@ -42,6 +42,10 @@ const DEDICATED_OPPORTUNITY_SOURCE_IDS = new Set([
   "dubai-future-foundation",
   "jobicy-uae-internships",
 ]);
+const SECURITY_BULLETIN_SOURCE_IDS = new Set([
+  "aws-security-bulletins",
+  "docker-security-announcements",
+]);
 
 const TOPIC_RULES: TopicRule[] = [
   {
@@ -570,8 +574,11 @@ export function analyzeItem(
   const opportunityText = DEDICATED_OPPORTUNITY_SOURCE_IDS.has(source.id)
     ? text
     : cleanText(raw.title, 1_000);
-  const isOpportunity = source.id === "jobicy-uae-internships" ||
-    matchesAny(OPPORTUNITY_PATTERNS, opportunityText);
+  const isSecurityBulletin = SECURITY_BULLETIN_SOURCE_IDS.has(source.id) ||
+    /\b(?:CVE-\d{4}-\d+|security advisory)\b/i.test(text);
+  const isOpportunity = !isSecurityBulletin &&
+    (source.id === "jobicy-uae-internships" ||
+      matchesAny(OPPORTUNITY_PATTERNS, opportunityText));
   const isUae = UAE_PATTERN.test(text) ||
     DEDICATED_OPPORTUNITY_SOURCE_IDS.has(source.id);
   const clearMismatch = SENIOR_ROLE_TITLE_PATTERN.test(raw.title) ||

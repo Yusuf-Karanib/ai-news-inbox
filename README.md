@@ -6,7 +6,8 @@ It uses:
 
 - Supabase Free for the schedule, code, and database.
 - Telegram for delivery, 0-3 ratings, and direct feed controls.
-- Allowlisted publisher, official-company, RSS, Atom, and release-note feeds.
+- Allowlisted publisher, official-company, developer-community, RSS, Atom,
+  JSON, and release-note feeds.
 - Local rules for filtering and ranking. No paid AI is required.
 
 The brief now treats relevance and news value as different things. A tutorial
@@ -28,11 +29,17 @@ For balance, one source can take at most two places and security alerts can
 take at most one place. This prevents a single technical feed from dominating
 the brief.
 
+Up to two places are reserved for useful projects shared by individual
+developers or small teams. These currently come from DEV Community's
+**Show DEV** feed and Hacker News **Show HN**. They are labelled **People Are
+Building** and explicitly treated as leads, not verified facts.
+
 Every card starts with a clear type such as **AI News**, **World News**, **UAE
-News**, **Opportunity**, or **Security News**. It then shows the headline, a
-short beginner explanation, and the source. Opportunity cards also show one
-short reminder to check application details. The rating buttons remain, but the
-card does not repeatedly ask Yusuf to rate it.
+News**, **Opportunity**, **People Are Building**, or **Security News**. The
+short version then says **Here's what's happening** in simple language instead
+of leading with a large headline. Opportunity cards also show one short
+reminder to check application details. The rating buttons remain, but the card
+does not repeatedly ask Yusuf to rate it.
 
 **Full story** expands the same Telegram message with the longer detail supplied
 by the source feed. **Short version** collapses it again. Yusuf can also reply
@@ -70,7 +77,8 @@ other.
 
 ## Honest limit
 
-The free version reads monitored publisher feeds. High-level AI coverage now
+The free version reads monitored publisher and public community feeds.
+High-level AI coverage now
 includes TechCrunch AI and The Verge AI. World coverage includes BBC World and
 Al Jazeera, but only major political or global events pass the daily filter.
 Opinion pages are excluded. The bot cannot independently prove
@@ -89,6 +97,10 @@ The free Supabase plan can also pause a quiet project. This makes the package su
 Free, dependable monitoring of every employee post on X is not available. The
 official X API is paid, and unofficial mirrors are fragile. Yusuf can paste an
 important post into Telegram and teach the bot its topic.
+
+Instagram's official API does not provide a broad feed of ordinary personal
+accounts. It mainly supports connected Business and Creator accounts. The bot
+does not scrape X or Instagram or bypass their access rules.
 
 ## What stays when you upgrade
 

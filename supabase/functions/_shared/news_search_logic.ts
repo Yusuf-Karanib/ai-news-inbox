@@ -3,7 +3,7 @@ import { isApprovedFeed } from "./feed_sources.ts";
 import { preferenceMatchTerms, preferenceTopics } from "./preferences.ts";
 import { cleanText } from "./utils.ts";
 
-const MAX_SOURCES = 30;
+const MAX_SOURCES = 40;
 export const MAX_SEARCH_RESULTS = 5;
 export const ON_DEMAND_FEED_TIMEOUT_MS = 6_000;
 
@@ -18,6 +18,7 @@ const BROAD_AI_TOPICS = new Set<TopicId>([
   "applied_ai",
   "ai_agents_automation",
   "developer_tools",
+  "community_projects",
 ]);
 
 const TOPIC_SOURCE_IDS: Readonly<Partial<Record<TopicId, readonly string[]>>> =
@@ -98,6 +99,7 @@ const TOPIC_SOURCE_IDS: Readonly<Partial<Record<TopicId, readonly string[]>>> =
       "aws-security-bulletins",
     ],
     world_high_impact: ["bbc-world", "aljazeera-news"],
+    community_projects: ["dev-showdev", "hacker-news-show"],
   });
 
 export type SearchMode = "personalized" | "broad_ai" | "specific";

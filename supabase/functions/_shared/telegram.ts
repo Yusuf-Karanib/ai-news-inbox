@@ -149,6 +149,8 @@ export function newsTypeLabel(
   const isOpportunity = hasAny(topics, OPPORTUNITY_TOPICS) ||
     (item.is_opportunity && item.action === "investigate_further");
 
+  if (topics.has("community_projects")) return "People Are Building";
+
   if (
     SECURITY_NEWS_SOURCE_IDS.has(item.source_id) ||
     (topics.has("general_tech_security") && !isOpportunity)
@@ -326,17 +328,17 @@ function compactSummary(item: NewsItemRow): string {
       ? "that may accept people in the UAE"
       : "whose application rules need to be checked";
     if (/\b(?:intern(?:ship)?|job|role|vacanc|hiring)\b/i.test(title)) {
-      return `This is a current job or internship listing ${audience}.`;
+      return `${title} is a current job or internship listing ${audience}.`;
     }
     if (/\b(?:hackathon|competition|challenge)\b/i.test(title)) {
-      return `This is a current competition or hackathon ${audience}.`;
+      return `${title} is a current competition or hackathon ${audience}.`;
     }
     if (
       /\b(?:course|training|bootcamp|certificate|certification)\b/i.test(title)
     ) {
-      return `This is a current learning program ${audience}.`;
+      return `${title} is a current learning program ${audience}.`;
     }
-    return `This is a current program or event ${audience}.`;
+    return `${title} is a current program or event ${audience}.`;
   }
 
   if (
@@ -385,23 +387,25 @@ export function formatNewsMessage(
   _heading = "News brief",
 ): string {
   const category = escapeHtml(newsTypeLabel(item));
-  const title = escapeHtml(cleanText(item.title, 450));
   const summary = escapeHtml(compactSummary(item));
   const source = escapeHtml(cleanText(sourceName, 100));
   const url = escapeHtml(item.canonical_url);
   const opportunityNote = newsTypeLabel(item).includes("Opportunity")
     ? "<b>Before applying:</b> Check the deadline, cost, eligibility, certificate, and UAE availability on the source page."
     : null;
+  const communityNote = item.topic_tags.includes("community_projects")
+    ? "Shared by a community member; treat it as a lead, not a verified fact."
+    : null;
 
   return [
     `<b>${category}</b>`,
     "",
-    `<b>${title}</b>`,
-    "",
-    `<b>In simple words:</b> ${summary}`,
+    `<b>Here’s what’s happening:</b> ${summary}`,
     "",
     opportunityNote,
     opportunityNote ? "" : null,
+    communityNote,
+    communityNote ? "" : null,
     `<b>Source:</b> <a href="${url}">${source}</a>`,
   ].filter((line): line is string => line !== null).join("\n");
 }

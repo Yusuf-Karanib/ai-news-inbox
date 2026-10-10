@@ -23,6 +23,7 @@ export const TOPIC_IDS = [
   "courses_certifications",
   "general_tech_security",
   "world_high_impact",
+  "community_projects",
 ] as const;
 
 export type TopicId = (typeof TOPIC_IDS)[number];
@@ -39,7 +40,7 @@ export interface FeedSource {
   feed_url: string;
   homepage_url: string;
   trust_level: "official" | string;
-  source_kind: "rss" | "atom" | "markdown" | string;
+  source_kind: "rss" | "atom" | "markdown" | "json" | string;
   base_priority: number;
   enabled: boolean;
   consecutive_failures?: number;
@@ -65,7 +66,7 @@ export interface AnalyzedItem {
   topic_tags: TopicId[];
   match_reasons: string[];
   importance: number;
-  verification_status: "official_source_only";
+  verification_status: "official_source_only" | "source_reported";
   action: RecommendedAction;
   is_opportunity: boolean;
   suppressed_at?: string | null;

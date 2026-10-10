@@ -78,6 +78,7 @@ function isValuable(item: NewsItemRow, scheduled: boolean): boolean {
     return false;
   }
   if (
+    !item.topic_tags.includes("community_projects") &&
     hasDirectTechnicalTopic(item.topic_tags) &&
     isGenericTechnicalGuide(item.title, item.summary)
   ) return false;
@@ -170,6 +171,19 @@ export function selectDailyBrief(
   );
   if (scheduled && readablePublisherItem && selected.length < targetSize) {
     add(readablePublisherItem.item);
+  }
+
+  // Keep two places for useful projects shared by individual developers or
+  // small teams. These are discovery leads, not automatically verified facts.
+  const communityDiscoveries = eligible.filter((candidate) =>
+    candidate.item.topic_tags.includes("community_projects") &&
+    canAdd(candidate.item, true)
+  ).slice(0, 2);
+  if (scheduled) {
+    for (const candidate of communityDiscoveries) {
+      if (selected.length >= targetSize) break;
+      if (canAdd(candidate.item, true)) add(candidate.item);
+    }
   }
 
   // Give readable AI news and major world news a chance before technical or

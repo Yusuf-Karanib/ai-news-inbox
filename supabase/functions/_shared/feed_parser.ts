@@ -1,4 +1,5 @@
 import { XMLParser } from "npm:fast-xml-parser@5.2.5";
+import { hackerNewsItem } from "./community_feed_parser.ts";
 import { isApprovedFeed, isApprovedRedirect } from "./feed_sources.ts";
 import { newestFeedItems } from "./feed_item_order.ts";
 import { parseMarkdownReleaseNotes } from "./markdown_feed_parser.ts";
@@ -25,7 +26,9 @@ function asArray<T>(value: T | T[] | null | undefined): T[] {
 
 function scalarText(value: unknown): string {
   if (value === null || value === undefined) return "";
-  if (typeof value === "string" || typeof value === "number") return String(value);
+  if (typeof value === "string" || typeof value === "number") {
+    return String(value);
+  }
   if (Array.isArray(value)) return value.map(scalarText).find(Boolean) ?? "";
   if (typeof value === "object") {
     const record = value as Record<string, unknown>;
@@ -54,7 +57,9 @@ function readEntries(document: Record<string, unknown>): unknown[] {
   const feed = document.feed as Record<string, unknown> | undefined;
   if (feed?.entry) return asArray(feed.entry);
 
-  const rdf = (document.RDF ?? document.rdf) as Record<string, unknown> | undefined;
+  const rdf = (document.RDF ?? document.rdf) as
+    | Record<string, unknown>
+    | undefined;
   if (rdf?.item) return asArray(rdf.item);
   return [];
 }
@@ -64,7 +69,8 @@ function entryToItem(entry: unknown, source: FeedSource): RawFeedItem | null {
   const item = entry as Record<string, unknown>;
   const title = cleanText(scalarText(item.title), 500);
   const identifierUrl = scalarText(item.guid) || scalarText(item.id);
-  const rawUrl = scalarText(item.link) || atomLink(item.link) || scalarText(item.url) ||
+  const rawUrl = scalarText(item.link) || atomLink(item.link) ||
+    scalarText(item.url) ||
     (/^https?:\/\//i.test(identifierUrl) ? identifierUrl : "");
   const url = canonicalizeUrl(rawUrl, source.homepage_url || source.feed_url, {
     preserveHash: source.id === "docker-security-announcements",
@@ -85,9 +91,59 @@ function entryToItem(entry: unknown, source: FeedSource): RawFeedItem | null {
   return { externalKey, title, summary, url, publishedAt };
 }
 
+async function parseJsonSource(
+  body: string,
+  source: FeedSource,
+  signal: AbortSignal,
+): Promise<RawFeedItem[]> {
+  let value: unknown;
+  try {
+    value = JSON.parse(body);
+  } catch {
+    throw new Error("JSON source could not be parsed");
+  }
+
+  if (source.id !== "hacker-news-show") {
+    throw new Error("No parser exists for this JSON source");
+  }
+  if (!Array.isArray(value)) {
+    throw new Error("Hacker News returned no story list");
+  }
+
+  const ids = value
+    .map(Number)
+    .filter(Number.isSafeInteger)
+    .slice(0, 24);
+  const results = await Promise.allSettled(ids.map(async (id) => {
+    const response = await fetch(
+      `https://hacker-news.firebaseio.com/v0/item/${id}.json`,
+      {
+        method: "GET",
+        redirect: "error",
+        signal,
+        headers: { "user-agent": "ai-news-inbox/1.0" },
+      },
+    );
+    if (!response.ok) {
+      throw new Error(`Hacker News item returned HTTP ${response.status}`);
+    }
+    return hackerNewsItem(await response.json());
+  }));
+
+  const items = results.flatMap((result) =>
+    result.status === "fulfilled" && result.value ? [result.value] : []
+  );
+  if (items.length === 0) {
+    throw new Error("Hacker News returned no usable stories");
+  }
+  return newestFeedItems(items, MAX_ITEMS_PER_FEED);
+}
+
 async function readLimitedBody(response: Response): Promise<string> {
   const declaredLength = Number(response.headers.get("content-length") ?? 0);
-  if (declaredLength > MAX_FEED_BYTES) throw new Error("Feed exceeds the 2 MB limit");
+  if (declaredLength > MAX_FEED_BYTES) {
+    throw new Error("Feed exceeds the 2 MB limit");
+  }
   if (!response.body) throw new Error("Feed response had no body");
 
   const reader = response.body.getReader();
@@ -120,7 +176,11 @@ async function fetchWithControlledRedirects(
 ): Promise<Response> {
   let nextUrl = source.feed_url;
 
-  for (let redirectCount = 0; redirectCount <= MAX_REDIRECTS; redirectCount += 1) {
+  for (
+    let redirectCount = 0;
+    redirectCount <= MAX_REDIRECTS;
+    redirectCount += 1
+  ) {
     const response = await fetch(nextUrl, {
       method: "GET",
       redirect: "manual",
@@ -150,16 +210,24 @@ export async function fetchAndParseFeed(
   source: FeedSource,
   timeoutMilliseconds = 12_000,
 ): Promise<RawFeedItem[]> {
-  if (!isApprovedFeed(source)) throw new Error("Feed is not on the fixed allowlist");
+  if (!isApprovedFeed(source)) {
+    throw new Error("Feed is not on the fixed allowlist");
+  }
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMilliseconds);
   try {
-    const response = await fetchWithControlledRedirects(source, controller.signal);
+    const response = await fetchWithControlledRedirects(
+      source,
+      controller.signal,
+    );
     if (!response.ok) throw new Error(`Feed returned HTTP ${response.status}`);
     const body = await readLimitedBody(response);
     if (source.source_kind === "markdown") {
       return parseMarkdownReleaseNotes(body, source);
+    }
+    if (source.source_kind === "json") {
+      return await parseJsonSource(body, source, controller.signal);
     }
     let document: Record<string, unknown>;
     try {

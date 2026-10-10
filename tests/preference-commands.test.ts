@@ -32,7 +32,9 @@ test("direct preference commands map to absolute levels", () => {
 });
 
 test("natural copied-post instructions are recognized", () => {
-  const prefix = parseTelegramCommand("I want more of this: Codex usage resets");
+  const prefix = parseTelegramCommand(
+    "I want more of this: Codex usage resets",
+  );
   assert.equal(prefix?.kind, "set_preference");
   assert.equal(prefix && "level" in prefix ? prefix.level : null, 1);
 
@@ -52,12 +54,17 @@ test("full-story wording is not mistaken for a preference", () => {
 });
 
 test("interest and help commands are recognized", () => {
-  assert.deepEqual(parseTelegramCommand("show my interests"), { kind: "interests" });
+  assert.deepEqual(parseTelegramCommand("show my interests"), {
+    kind: "interests",
+  });
   assert.deepEqual(parseTelegramCommand("/start"), { kind: "help" });
 });
 
 test("on-demand news searches are recognized without breaking preferences", () => {
-  assert.deepEqual(parseTelegramCommand("/news"), { kind: "search_news", subject: "" });
+  assert.deepEqual(parseTelegramCommand("/news"), {
+    kind: "search_news",
+    subject: "",
+  });
   assert.deepEqual(parseTelegramCommand("/news@MyBot Codex"), {
     kind: "search_news",
     subject: "Codex",
@@ -70,18 +77,24 @@ test("on-demand news searches are recognized without breaking preferences", () =
     kind: "search_news",
     subject: "Claude",
   });
-  assert.deepEqual(parseTelegramCommand("show me more news about UAE internships"), {
-    kind: "search_news",
-    subject: "UAE internships",
-  });
+  assert.deepEqual(
+    parseTelegramCommand("show me more news about UAE internships"),
+    {
+      kind: "search_news",
+      subject: "UAE internships",
+    },
+  );
   assert.deepEqual(parseTelegramCommand("get me more news"), {
     kind: "search_news",
     subject: "",
   });
-  assert.deepEqual(parseTelegramCommand("Can you get me more news about NVIDIA AI?"), {
-    kind: "search_news",
-    subject: "NVIDIA AI",
-  });
+  assert.deepEqual(
+    parseTelegramCommand("Can you get me more news about NVIDIA AI?"),
+    {
+      kind: "search_news",
+      subject: "NVIDIA AI",
+    },
+  );
   assert.deepEqual(parseTelegramCommand("what's new with Grok?"), {
     kind: "search_news",
     subject: "Grok",
@@ -94,10 +107,23 @@ test("on-demand news searches are recognized without breaking preferences", () =
 });
 
 test("known brands and goals become specific saved topics", () => {
-  assert.deepEqual(preferenceTopics("Claude and Anthropic news"), ["anthropic_claude"]);
-  assert.ok(preferenceTopics("NVIDIA AI hardware").includes("nvidia_ai_hardware"));
-  assert.ok(preferenceTopics("NVIDIA AI hardware").includes("ai_hardware_chips"));
-  assert.ok(preferenceTopics("Codex usage reset").includes("ai_access_pricing"));
+  assert.deepEqual(preferenceTopics("Claude and Anthropic news"), [
+    "anthropic_claude",
+  ]);
+  assert.ok(
+    preferenceTopics("NVIDIA AI hardware").includes("nvidia_ai_hardware"),
+  );
+  assert.ok(
+    preferenceTopics("NVIDIA AI hardware").includes("ai_hardware_chips"),
+  );
+  assert.ok(
+    preferenceTopics("Codex usage reset").includes("ai_access_pricing"),
+  );
+  assert.ok(
+    preferenceTopics("Show me more things people are building").includes(
+      "community_projects",
+    ),
+  );
 
   const rows = buildPreferenceRows("/more Codex usage resets", 1, 99);
   assert.deepEqual(
@@ -108,17 +134,28 @@ test("known brands and goals become specific saved topics", () => {
 });
 
 test("bare unknown links require a description and are never fetched", () => {
-  assert.deepEqual(buildPreferenceRows("https://example.com/post/123", 1, 1), []);
+  assert.deepEqual(
+    buildPreferenceRows("https://example.com/post/123", 1, 1),
+    [],
+  );
 });
 
 test("official product links can identify a topic without scraping", () => {
-  const rows = buildPreferenceRows("https://www.anthropic.com/news/example", 1, 1);
+  const rows = buildPreferenceRows(
+    "https://www.anthropic.com/news/example",
+    1,
+    1,
+  );
   assert.equal(rows[0]?.normalized_label, "topic:anthropic_claude");
   assert.equal(rows[0]?.source_url, "https://www.anthropic.com/news/example");
 });
 
 test("unknown but meaningful descriptions create a limited keyword rule", () => {
-  const rows = buildPreferenceRows("quantum computing research breakthroughs", 1, 1);
+  const rows = buildPreferenceRows(
+    "quantum computing research breakthroughs",
+    1,
+    1,
+  );
   assert.equal(rows.length, 1);
   assert.match(rows[0].normalized_label, /^custom:/);
   assert.ok(rows[0].match_terms.length >= 2);

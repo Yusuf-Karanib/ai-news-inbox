@@ -7,6 +7,7 @@ import type {
   TopicWeightRow,
 } from "./types.ts";
 import { clamp, cleanText } from "./utils.ts";
+import { COMMUNITY_DISCOVERY_SOURCE_IDS } from "./feed_sources.ts";
 
 interface TopicRule {
   id: TopicId;
@@ -280,6 +281,8 @@ const SOURCE_TOPIC: Readonly<Partial<Record<string, TopicId>>> = Object.freeze({
   "python-insider": "python_apis",
   "ros-announcements": "robotics_ros2",
   "dubai-future-foundation": "uae_events_hackathons",
+  "dev-showdev": "community_projects",
+  "hacker-news-show": "community_projects",
 });
 
 const WHY: Readonly<Record<TopicId, string>> = Object.freeze({
@@ -322,6 +325,8 @@ const WHY: Readonly<Record<TopicId, string>> = Object.freeze({
     "It may require a change to keep Yusuf's tools or projects safe.",
   world_high_impact:
     "It is a major world event that may be worth knowing even though it is not AI news.",
+  community_projects:
+    "It is something a developer or small team says they built.",
 });
 
 const UAE_PATTERN =
@@ -384,6 +389,8 @@ const DIRECT_TOOL_TOPICS = new Set<TopicId>([
   "docker",
   "react_nextjs",
 ]);
+const COMMUNITY_BUILD_PATTERN =
+  /\b(?:show hn|i (?:built|made|created|launched)|we (?:built|made|created|launched)|open[- ]source|my (?:project|app|tool|bot|agent)|new (?:project|app|tool)|building in public)\b/i;
 
 function matchesAny(patterns: readonly RegExp[], text: string): boolean {
   return patterns.some((pattern) => pattern.test(text));
@@ -510,6 +517,7 @@ export function analyzeItem(
   now = new Date(),
 ): AnalyzedItem | null {
   const text = cleanText(`${raw.title} ${raw.summary}`, 4_000);
+  const isCommunityDiscovery = COMMUNITY_DISCOVERY_SOURCE_IDS.has(source.id);
   if (isRoutineStatusUpdate(source.id, raw.title, raw.summary)) return null;
   if (source.id === "aljazeera-news" && /\/opinions?\//i.test(raw.url)) {
     return null;
@@ -551,6 +559,15 @@ export function analyzeItem(
     tags.push(sourceTopic);
     reasons.push(`Official ${sourceTopic.replaceAll("_", " ")} source`);
     score += 0.55 * (weights.get(sourceTopic) ?? 1);
+  }
+
+  if (isCommunityDiscovery) {
+    if (
+      source.id === "hacker-news-show" &&
+      !COMMUNITY_BUILD_PATTERN.test(text)
+    ) return null;
+    reasons.push("Shared by a developer or small team");
+    score += 2.4 * (weights.get("community_projects") ?? 1);
   }
 
   if (source.id === "openai-codex-releases") {
@@ -595,7 +612,10 @@ export function analyzeItem(
     reasons.push("UAE internship feed");
   }
 
-  if (hasDirectToolMatch && isGenericTechnicalGuide(raw.title, raw.summary)) {
+  if (
+    !isCommunityDiscovery && hasDirectToolMatch &&
+    isGenericTechnicalGuide(raw.title, raw.summary)
+  ) {
     return null;
   }
 
@@ -688,7 +708,9 @@ export function analyzeItem(
     topic_tags: tags,
     match_reasons: reasons.slice(0, 8),
     importance,
-    verification_status: "official_source_only",
+    verification_status: isCommunityDiscovery
+      ? "source_reported"
+      : "official_source_only",
     action,
     is_opportunity: isOpportunity,
   };

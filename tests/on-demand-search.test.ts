@@ -15,13 +15,18 @@ import {
 import { APPROVED_FEEDS } from "../supabase/functions/_shared/feed_sources.ts";
 
 function source(id: keyof typeof APPROVED_FEEDS): FeedSource {
+  const isCommunity = id === "dev-showdev" || id === "hacker-news-show";
   return {
     id,
     name: id,
     feed_url: APPROVED_FEEDS[id],
     homepage_url: APPROVED_FEEDS[id],
-    trust_level: "official",
-    source_kind: id === "xai-release-notes" ? "markdown" : "rss",
+    trust_level: isCommunity ? "discovery" : "official",
+    source_kind: id === "xai-release-notes"
+      ? "markdown"
+      : APPROVED_FEEDS[id].endsWith(".json")
+      ? "json"
+      : "rss",
     base_priority: 100,
     enabled: true,
   };
@@ -66,6 +71,20 @@ test("known topics refresh only their useful official source group", () => {
   assert.deepEqual(
     sourcesForSearch(candidates, "Codex").map((value) => value.id),
     ["openai-news", "openai-codex-releases", "openai-status"],
+  );
+});
+
+test("community discovery searches use only the two builder sources", () => {
+  const candidates = [
+    source("openai-news"),
+    source("dev-showdev"),
+    source("hacker-news-show"),
+  ];
+  assert.deepEqual(
+    sourcesForSearch(candidates, "things people are building").map((value) =>
+      value.id
+    ),
+    ["dev-showdev", "hacker-news-show"],
   );
 });
 

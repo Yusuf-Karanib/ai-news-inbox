@@ -133,8 +133,9 @@ arbitrary links.
 ## Short and full story views
 
 - Every card starts with a clear type: AI News, World News, UAE News,
-  Opportunity, Security News, Robotics News, or Tech News.
-- The short card contains the headline, a beginner explanation, and the source.
+  Opportunity, People Are Building, Security News, Robotics News, or Tech News.
+- The short card says “Here's what's happening” in simple language and links
+  to the source instead of leading with a large headline.
   An opportunity also shows one reminder to check its deadline, cost,
   eligibility, certificate, and UAE availability. Importance, status,
   recommended action, and “why for Yusuf” are not displayed.
@@ -147,11 +148,15 @@ arbitrary links.
 
 ## Important limits
 
-- Only fixed allowlisted feeds are read automatically. Social posts are not automatically checked.
+- Only fixed allowlisted feeds and public community sources are read
+  automatically. DEV Show DEV and Hacker News Show HN supply community-built
+  projects, with at most two places in a scheduled brief.
 - Scheduled briefs reject resolved or routine outages, generic how-to guides,
   and other low-value technical filler. One place is reserved for a current
   opportunity; if none exists, the brief contains at most nine cards.
-- Reliable free monitoring of every X post is not available; paste important posts into the bot.
+- Reliable free monitoring of every X post is not available; X charges for API
+  reads. Instagram does not offer a broad ordinary-user discovery feed through
+  its official API. Paste important posts into the bot.
 - An official announcement is evidence of what the organization announced, not proof that every claim is true.
 - The free local rules explain common technical words, but they cannot simplify every unusual term as well as a paid AI model.
 - “Full story” contains available source-feed details and the source article link; it is not a paid-AI analysis.

@@ -56,6 +56,26 @@ test("major official AI model release gets a discovery slot", () => {
   assert.equal(result.verification_status, "official_source_only");
 });
 
+test("a community-built project is kept but marked as a source claim", () => {
+  const result = analyzeItem(
+    {
+      ...source("hacker-news-show", "Hacker News — Show HN", 74),
+      trust_level: "discovery",
+      source_kind: "json",
+    },
+    item(
+      "Show HN: I built an open-source AI agent debugger",
+      "A small tool for inspecting failed Python automation runs.",
+    ),
+    weights,
+    now,
+  );
+  assert.ok(result);
+  assert.ok(result.topic_tags.includes("community_projects"));
+  assert.equal(result.verification_status, "source_reported");
+  assert.ok(result.importance >= 3);
+});
+
 test("a directly relevant ROS 2 update is kept", () => {
   const result = analyzeItem(
     source("ros-announcements", "ROS Announcements", 90),

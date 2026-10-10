@@ -18,7 +18,7 @@ import {
   uaeDate,
 } from "../_shared/utils.ts";
 
-const MAX_SOURCES = 30;
+const MAX_SOURCES = 40;
 const MAX_MESSAGES = 10;
 const MAX_CANDIDATES = 300;
 
@@ -61,12 +61,17 @@ async function finishRun(
 
 async function readRunRequest(request: Request): Promise<RunRequest> {
   try {
-    const body = await request.json() as { trigger?: unknown; runSlot?: unknown };
+    const body = await request.json() as {
+      trigger?: unknown;
+      runSlot?: unknown;
+    };
     const runSlot = body.runSlot === "morning" || body.runSlot === "evening"
       ? body.runSlot
       : null;
     return {
-      trigger: typeof body.trigger === "string" ? body.trigger.slice(0, 40) : "manual",
+      trigger: typeof body.trigger === "string"
+        ? body.trigger.slice(0, 40)
+        : "manual",
       runSlot,
     };
   } catch {
@@ -101,21 +106,35 @@ Deno.serve(async (request: Request): Promise<Response> => {
 
   const runRequest = await readRunRequest(request);
   const isManual = new URL(request.url).searchParams.get("manual") === "true";
-  const runSlot: RunSlot = isManual ? "manual" : runRequest.runSlot ?? inferredScheduledSlot();
+  const runSlot: RunSlot = isManual
+    ? "manual"
+    : runRequest.runSlot ?? inferredScheduledSlot();
   const trigger = runRequest.trigger;
   const runDate = uaeDate();
   const database = adminClient();
-  const stats: RunStats = { sourcesOk: 0, sourcesFailed: 0, itemsFound: 0, itemsSent: 0 };
+  const stats: RunStats = {
+    sourcesOk: 0,
+    sourcesFailed: 0,
+    itemsFound: 0,
+    itemsSent: 0,
+  };
   let runToken: string | null = null;
 
   try {
-    const { data: claimData, error: claimError } = await database.rpc("claim_news_run", {
-      p_run_date: runDate,
-      p_run_slot: runSlot,
-    });
-    if (claimError) throw new Error(`Could not claim run: ${claimError.message}`);
+    const { data: claimData, error: claimError } = await database.rpc(
+      "claim_news_run",
+      {
+        p_run_date: runDate,
+        p_run_slot: runSlot,
+      },
+    );
+    if (claimError) {
+      throw new Error(`Could not claim run: ${claimError.message}`);
+    }
 
-    const claim = (Array.isArray(claimData) ? claimData[0] : claimData) as ClaimedRun | null;
+    const claim = (Array.isArray(claimData) ? claimData[0] : claimData) as
+      | ClaimedRun
+      | null;
     if (!claim?.claimed || !claim.run_token) {
       return jsonResponse({
         ok: true,
@@ -139,9 +158,15 @@ Deno.serve(async (request: Request): Promise<Response> => {
       database.from("topic_weights").select("topic,weight,rating_count"),
       database.from("user_preferences").select("*").eq("active", true),
     ]);
-    if (sourceError) throw new Error(`Could not load sources: ${sourceError.message}`);
-    if (weightError) throw new Error(`Could not load topic weights: ${weightError.message}`);
-    if (preferenceError) throw new Error(`Could not load preferences: ${preferenceError.message}`);
+    if (sourceError) {
+      throw new Error(`Could not load sources: ${sourceError.message}`);
+    }
+    if (weightError) {
+      throw new Error(`Could not load topic weights: ${weightError.message}`);
+    }
+    if (preferenceError) {
+      throw new Error(`Could not load preferences: ${preferenceError.message}`);
+    }
 
     const topicWeights = (weightData ?? []) as TopicWeightRow[];
     const preferences = (preferenceData ?? []) as UserPreferenceRow[];
@@ -165,14 +190,18 @@ Deno.serve(async (request: Request): Promise<Response> => {
       .order("published_at", { ascending: false, nullsFirst: false })
       .order("discovered_at", { ascending: false })
       .limit(MAX_CANDIDATES);
-    if (unsentError) throw new Error(`Could not load the brief: ${unsentError.message}`);
+    if (unsentError) {
+      throw new Error(`Could not load the brief: ${unsentError.message}`);
+    }
 
     const unsent = selectDailyBrief(
       (candidateData ?? []) as NewsItemRow[],
       preferences,
       MAX_MESSAGES,
     );
-    const sourceNames = new Map(ingestion.sources.map((source) => [source.id, source.name]));
+    const sourceNames = new Map(
+      ingestion.sources.map((source) => [source.id, source.name]),
+    );
     const heading = briefHeading(runSlot);
 
     if (unsent.length === 0) {
@@ -212,10 +241,15 @@ Deno.serve(async (request: Request): Promise<Response> => {
         updated_at: completedAt,
       },
     ];
-    const { error: stateError } = await database.from("news_state").upsert(stateRows, {
-      onConflict: "key",
-    });
-    if (stateError) throw new Error(`Could not save success state: ${stateError.message}`);
+    const { error: stateError } = await database.from("news_state").upsert(
+      stateRows,
+      {
+        onConflict: "key",
+      },
+    );
+    if (stateError) {
+      throw new Error(`Could not save success state: ${stateError.message}`);
+    }
 
     await finishRun(database, runDate, runSlot, runToken, "success", stats);
     return jsonResponse({ ok: true, runDate, runSlot, trigger, ...stats });
@@ -225,9 +259,19 @@ Deno.serve(async (request: Request): Promise<Response> => {
 
     if (runToken) {
       try {
-        await finishRun(database, runDate, runSlot, runToken, "failed", stats, message);
+        await finishRun(
+          database,
+          runDate,
+          runSlot,
+          runToken,
+          "failed",
+          stats,
+          message,
+        );
       } catch (finishError) {
-        console.error(`Recording run failure also failed: ${safeError(finishError)}`);
+        console.error(
+          `Recording run failure also failed: ${safeError(finishError)}`,
+        );
       }
     }
 
@@ -237,7 +281,9 @@ Deno.serve(async (request: Request): Promise<Response> => {
           "AI News Inbox failed after its final attempt for this brief. Your history is safe. Check the Supabase function logs when convenient.",
         );
       } catch (notificationError) {
-        console.error(`Failure notice could not be sent: ${safeError(notificationError)}`);
+        console.error(
+          `Failure notice could not be sent: ${safeError(notificationError)}`,
+        );
       }
     }
 

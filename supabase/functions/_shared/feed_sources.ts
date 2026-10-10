@@ -39,7 +39,14 @@ export const APPROVED_FEEDS: Readonly<Record<string, string>> = Object.freeze({
   "ros-announcements":
     "https://discourse.openrobotics.org/c/ros/ros-announcements-news/112.rss",
   "dubai-future-foundation": "https://www.dubaifuture.ae/feed/",
+  "dev-showdev": "https://dev.to/feed/tag/showdev",
+  "hacker-news-show": "https://hacker-news.firebaseio.com/v0/showstories.json",
 });
+
+export const COMMUNITY_DISCOVERY_SOURCE_IDS = new Set([
+  "dev-showdev",
+  "hacker-news-show",
+]);
 
 function normalizedUrl(value: string): string | null {
   try {
@@ -54,12 +61,15 @@ function normalizedUrl(value: string): string | null {
 
 export function isApprovedFeed(source: FeedSource): boolean {
   const expected = APPROVED_FEEDS[source.id];
-  if (!expected || !source.enabled || source.trust_level !== "official") {
+  if (
+    !expected || !source.enabled ||
+    (source.trust_level !== "official" && source.trust_level !== "discovery")
+  ) {
     return false;
   }
   if (
     source.source_kind !== "rss" && source.source_kind !== "atom" &&
-    source.source_kind !== "markdown"
+    source.source_kind !== "markdown" && source.source_kind !== "json"
   ) return false;
   return normalizedUrl(source.feed_url) === normalizedUrl(expected);
 }

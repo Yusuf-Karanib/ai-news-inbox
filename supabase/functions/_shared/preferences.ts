@@ -31,32 +31,76 @@ export const TOPIC_LABELS: Readonly<Record<TopicId, string>> = Object.freeze({
   courses_certifications: "useful courses and certifications",
   general_tech_security: "important technology and security changes",
   world_high_impact: "major world news",
+  community_projects: "things people are building",
 });
 
 const PREFERENCE_TOPIC_RULES: ReadonlyArray<readonly [TopicId, RegExp]> = [
-  ["anthropic_claude", /\b(?:anthropic|claude(?:\s+(?:code|ai|opus|sonnet|haiku))?)\b/i],
+  [
+    "anthropic_claude",
+    /\b(?:anthropic|claude(?:\s+(?:code|ai|opus|sonnet|haiku))?)\b/i,
+  ],
   ["openai_chatgpt_codex", /\b(?:openai|chatgpt|codex|gpt[- ]?\d|sora)\b/i],
   ["nvidia_ai_hardware", /\b(?:nvidia|cuda|dgx|geforce|blackwell|rubin)\b/i],
   ["xai_grok", /\b(?:grok|xai|x\.ai)\b/i],
-  ["ai_access_pricing", /\b(?:usage resets?|reset(?:s|ting)? (?:the )?(?:usage|limit)|rate limit|usage limit|message limit|subscription|credits?|quota|free access|pricing)\b/i],
-  ["ai_hardware_chips", /\b(?:ai hardware|gpu|npu|tpu|ai chip|accelerator chip|semiconductor|data cent(?:er|re) chip)\b/i],
-  ["ai_models_releases", /\b(?:new ai model|model release|frontier model|open[- ]weight model|multimodal model)\b/i],
-  ["ai_agents_automation", /\b(?:ai agents?|agentic|automation|mcp|model context protocol|openbento|openclaw)\b/i],
+  [
+    "ai_access_pricing",
+    /\b(?:usage resets?|reset(?:s|ting)? (?:the )?(?:usage|limit)|rate limit|usage limit|message limit|subscription|credits?|quota|free access|pricing)\b/i,
+  ],
+  [
+    "ai_hardware_chips",
+    /\b(?:ai hardware|gpu|npu|tpu|ai chip|accelerator chip|semiconductor|data cent(?:er|re) chip)\b/i,
+  ],
+  [
+    "ai_models_releases",
+    /\b(?:new ai model|model release|frontier model|open[- ]weight model|multimodal model)\b/i,
+  ],
+  [
+    "ai_agents_automation",
+    /\b(?:ai agents?|agentic|automation|mcp|model context protocol|openbento|openclaw)\b/i,
+  ],
   ["robotics_ros2", /\b(?:robotics?|ros\s*2|gazebo|humanoid)\b/i],
   ["python_apis", /\b(?:python|apis?|fastapi|webhooks?)\b/i],
-  ["developer_tools", /\b(?:developer tools?|coding tools?|software development|github|git)\b/i],
+  [
+    "developer_tools",
+    /\b(?:developer tools?|coding tools?|software development|github|git)\b/i,
+  ],
   ["n8n", /\bn8n\b/i],
   ["aws_cloud", /\b(?:aws|amazon web services|bedrock|sagemaker)\b/i],
   ["supabase", /\bsupabase\b/i],
   ["docker", /\b(?:docker|containers?)\b/i],
   ["react_nextjs", /\b(?:react|next\.?js|typescript)\b/i],
-  ["uae_jobs_internships", /\b(?:uae|dubai|abu dhabi|sharjah|mina zayed).{0,80}\b(?:jobs?|hiring|internships?|vacanc(?:y|ies))\b|\b(?:jobs?|hiring|internships?|vacanc(?:y|ies)).{0,80}\b(?:uae|dubai|abu dhabi|sharjah|mina zayed)\b/i],
-  ["uae_events_hackathons", /\b(?:uae|dubai|abu dhabi|sharjah).{0,80}\b(?:events?|programs?|hackathons?|fellowships?|grants?|competitions?|accelerators?)\b|\b(?:events?|programs?|hackathons?|fellowships?|grants?|competitions?|accelerators?).{0,80}\b(?:uae|dubai|abu dhabi|sharjah)\b/i],
-  ["uae_relevant_news", /\b(?:uae|united arab emirates|dubai|abu dhabi|sharjah|emirates?)\b/i],
-  ["career_opportunities", /\b(?:internships?|jobs?|hiring|programs?|hackathons?|fellowships?|grants?|competitions?|accelerators?|applications? open)\b/i],
-  ["courses_certifications", /\b(?:courses?|certifications?|training|bootcamps?)\b/i],
-  ["general_tech_security", /\b(?:cybersecurity|security advisory|vulnerabilit(?:y|ies)|zero[- ]day|data breach|breaking change|deprecation)\b/i],
-  ["world_high_impact", /\b(?:world news|global news|geopolitics|major international news)\b/i],
+  [
+    "uae_jobs_internships",
+    /\b(?:uae|dubai|abu dhabi|sharjah|mina zayed).{0,80}\b(?:jobs?|hiring|internships?|vacanc(?:y|ies))\b|\b(?:jobs?|hiring|internships?|vacanc(?:y|ies)).{0,80}\b(?:uae|dubai|abu dhabi|sharjah|mina zayed)\b/i,
+  ],
+  [
+    "uae_events_hackathons",
+    /\b(?:uae|dubai|abu dhabi|sharjah).{0,80}\b(?:events?|programs?|hackathons?|fellowships?|grants?|competitions?|accelerators?)\b|\b(?:events?|programs?|hackathons?|fellowships?|grants?|competitions?|accelerators?).{0,80}\b(?:uae|dubai|abu dhabi|sharjah)\b/i,
+  ],
+  [
+    "uae_relevant_news",
+    /\b(?:uae|united arab emirates|dubai|abu dhabi|sharjah|emirates?)\b/i,
+  ],
+  [
+    "career_opportunities",
+    /\b(?:internships?|jobs?|hiring|programs?|hackathons?|fellowships?|grants?|competitions?|accelerators?|applications? open)\b/i,
+  ],
+  [
+    "courses_certifications",
+    /\b(?:courses?|certifications?|training|bootcamps?)\b/i,
+  ],
+  [
+    "general_tech_security",
+    /\b(?:cybersecurity|security advisory|vulnerabilit(?:y|ies)|zero[- ]day|data breach|breaking change|deprecation)\b/i,
+  ],
+  [
+    "world_high_impact",
+    /\b(?:world news|global news|geopolitics|major international news)\b/i,
+  ],
+  [
+    "community_projects",
+    /\b(?:things people (?:are )?build(?:ing)?|community projects?|indie projects?|show hn|showdev|people inventing)\b/i,
+  ],
 ];
 
 const DOMAIN_TOPICS: ReadonlyArray<readonly [RegExp, readonly TopicId[]]> = [
@@ -64,22 +108,71 @@ const DOMAIN_TOPICS: ReadonlyArray<readonly [RegExp, readonly TopicId[]]> = [
   [/\b(?:openai\.com|chatgpt\.com)\b/i, ["openai_chatgpt_codex"]],
   [/\bnvidia\.com\b/i, ["nvidia_ai_hardware"]],
   [/\b(?:x\.ai|grok\.com)\b/i, ["xai_grok"]],
-  [/\b(?:huggingface\.co|deepmind\.google|mistral\.ai)\b/i, ["ai_models_releases"]],
+  [/\b(?:huggingface\.co|deepmind\.google|mistral\.ai)\b/i, [
+    "ai_models_releases",
+  ]],
   [/\b(?:thsottiaux|openai|chatgpt|codex)\b/i, ["openai_chatgpt_codex"]],
 ];
 
 const STOP_WORDS = new Set([
-  "about", "after", "again", "also", "and", "because", "before", "being",
-  "but", "can", "could", "does", "from", "give", "have", "here", "into",
-  "just", "like", "more", "news", "only", "please", "post", "really", "say",
-  "show", "some", "that", "the", "their", "them", "there", "these", "they",
-  "this", "those", "update", "want", "what", "when", "where", "which", "with",
-  "would", "your", "you", "http", "https", "www", "com",
+  "about",
+  "after",
+  "again",
+  "also",
+  "and",
+  "because",
+  "before",
+  "being",
+  "but",
+  "can",
+  "could",
+  "does",
+  "from",
+  "give",
+  "have",
+  "here",
+  "into",
+  "just",
+  "like",
+  "more",
+  "news",
+  "only",
+  "please",
+  "post",
+  "really",
+  "say",
+  "show",
+  "some",
+  "that",
+  "the",
+  "their",
+  "them",
+  "there",
+  "these",
+  "they",
+  "this",
+  "those",
+  "update",
+  "want",
+  "what",
+  "when",
+  "where",
+  "which",
+  "with",
+  "would",
+  "your",
+  "you",
+  "http",
+  "https",
+  "www",
+  "com",
 ]);
 
 function uniqueTopics(values: readonly string[]): TopicId[] {
   const valid = new Set(Object.keys(TOPIC_LABELS));
-  return [...new Set(values.filter((value): value is TopicId => valid.has(value)))];
+  return [
+    ...new Set(values.filter((value): value is TopicId => valid.has(value))),
+  ];
 }
 
 export function preferenceTopics(value: unknown): TopicId[] {
@@ -120,7 +213,10 @@ export function preferenceMatchTerms(value: unknown): string[] {
     .replace(/https?:\/\/\S+/gi, " ")
     .toLowerCase();
   const tokens = withoutUrls.match(/[a-z][a-z0-9.+#-]{2,}/g) ?? [];
-  return [...new Set(tokens.filter((token) => !STOP_WORDS.has(token)))].slice(0, 8);
+  return [...new Set(tokens.filter((token) => !STOP_WORDS.has(token)))].slice(
+    0,
+    8,
+  );
 }
 
 function customLabel(terms: string[]): string {
@@ -178,13 +274,19 @@ export function preferenceMatchesItem(
   item: NewsItemRow,
 ): boolean {
   if (!preference.active) return false;
-  if (preference.topic_tags.some((topic) => item.topic_tags.includes(topic as TopicId))) {
+  if (
+    preference.topic_tags.some((topic) =>
+      item.topic_tags.includes(topic as TopicId)
+    )
+  ) {
     return true;
   }
   if (preference.match_terms.length === 0) return false;
 
   const text = cleanText(`${item.title} ${item.summary}`, 5_000).toLowerCase();
-  const matches = preference.match_terms.filter((term) => text.includes(term.toLowerCase())).length;
+  const matches =
+    preference.match_terms.filter((term) => text.includes(term.toLowerCase()))
+      .length;
   const required = preference.match_terms.length <= 2
     ? preference.match_terms.length
     : Math.min(3, Math.ceil(preference.match_terms.length / 2));

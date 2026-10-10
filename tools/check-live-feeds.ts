@@ -9,9 +9,13 @@ const results = await Promise.all(
       name: id,
       feed_url: feedUrl,
       homepage_url: feedUrl,
-      trust_level: "official",
+      trust_level: id === "dev-showdev" || id === "hacker-news-show"
+        ? "discovery"
+        : "official",
       source_kind: id === "xai-release-notes"
         ? "markdown"
+        : feedUrl.endsWith(".json")
+        ? "json"
         : feedUrl.endsWith(".atom")
         ? "atom"
         : "rss",

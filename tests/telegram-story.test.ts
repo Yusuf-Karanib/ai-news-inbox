@@ -114,8 +114,9 @@ test("news type is stable and uses clear category precedence", () => {
 test("default card is simple and removes unwanted fields", () => {
   const result = formatNewsMessage(item, "n8n Blog", 1, 5);
   assert.match(result, /^<b>AI News: AI Agents<\/b>/);
-  assert.match(result, /In simple words:/);
+  assert.match(result, /Here’s what’s happening:/);
   assert.match(result, /Source:/);
+  assert.doesNotMatch(result, /<b>A useful n8n update<\/b>/);
   assert.doesNotMatch(result, removedCardLabels);
   assert.doesNotMatch(result, /Second useful sentence|Third detailed sentence/);
 });
@@ -143,13 +144,13 @@ test("the NVIDIA Jetson example gets a useful beginner explanation", () => {
   );
 });
 
-test("repeated headline is not repeated inside the explanation", () => {
+test("a headline is not repeated as the short card body", () => {
   const repeated = {
     ...item,
     summary: `${item.title}. The update can now handle a useful new task.`,
   };
   const result = formatNewsMessage(repeated, "n8n Blog", 1, 1);
-  assert.equal(result.split(item.title).length - 1, 1);
+  assert.equal(result.split(item.title).length - 1, 0);
   assert.match(result, /The update can now handle a useful new task/);
 });
 
@@ -196,7 +197,7 @@ test("opportunity cards replace company advertising with a plain explanation", (
   const result = formatNewsMessage(opportunity, "Job listing feed", 1, 1);
   assert.match(
     result,
-    /This is a current job or internship listing that may accept people in the UAE\./,
+    /Cloud Engineer Intern is a current job or internship listing that may accept people in the UAE\./,
   );
   assert.doesNotMatch(result, /leading global|revolutionary services/);
 });
@@ -205,12 +206,27 @@ test("card text safely escapes Telegram HTML", () => {
   const unsafe = {
     ...item,
     title: "AI <launch> & update",
-    summary: "A <model> can now use A & B.",
+    summary: "A & B can now work safely.",
   };
   const result = formatNewsMessage(unsafe, "Source & News", 1, 1);
-  assert.match(result, /AI &amp; update/);
+  assert.match(result, /A &amp; B can now work safely/);
   assert.match(result, /Source &amp; News/);
   assert.doesNotMatch(result, /<launch>|<model>/);
+});
+
+test("community projects are clearly labelled as unverified leads", () => {
+  const community: NewsItemRow = {
+    ...item,
+    source_id: "hacker-news-show",
+    title: "Show HN: I built an AI debugging tool",
+    summary: "A developer shared a tool that explains failed agent runs.",
+    topic_tags: ["community_projects", "ai_agents_automation"],
+    verification_status: "source_reported",
+  };
+  const result = formatNewsMessage(community, "Hacker News — Show HN", 1, 1);
+  assert.match(result, /^<b>People Are Building<\/b>/);
+  assert.match(result, /Here’s what’s happening:/);
+  assert.match(result, /treat it as a lead, not a verified fact/);
 });
 
 test("story buttons keep all rating and view controls", () => {

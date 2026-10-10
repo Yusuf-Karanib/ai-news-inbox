@@ -28,8 +28,15 @@ const betterNewsMigration = readFileSync(
   ),
   "utf8",
 );
+const communityDiscoveryMigration = readFileSync(
+  new URL(
+    "../supabase/migrations/202610110001_community_discovery.sql",
+    import.meta.url,
+  ),
+  "utf8",
+);
 const migration =
-  `${originalMigration}\n${adaptiveMigration}\n${twiceDailyMigration}\n${betterNewsMigration}`;
+  `${originalMigration}\n${adaptiveMigration}\n${twiceDailyMigration}\n${betterNewsMigration}\n${communityDiscoveryMigration}`;
 const schedule = readFileSync(
   new URL("../supabase/setup_schedule.sql", import.meta.url),
   "utf8",
@@ -71,7 +78,7 @@ const telegramClient = readFileSync(
 );
 
 test("every fetched feed is seeded by exact ID and URL", () => {
-  assert.equal(Object.keys(APPROVED_FEEDS).length, 29);
+  assert.equal(Object.keys(APPROVED_FEEDS).length, 31);
   for (const [id, url] of Object.entries(APPROVED_FEEDS)) {
     assert.ok(migration.includes(`'${id}'`), `migration is missing ${id}`);
     assert.ok(migration.includes(`'${url}'`), `migration is missing ${url}`);
@@ -79,7 +86,7 @@ test("every fetched feed is seeded by exact ID and URL", () => {
 });
 
 test("the adaptive brief can inspect every source and choose up to ten", () => {
-  assert.ok(dailyFunction.includes("const MAX_SOURCES = 30"));
+  assert.ok(dailyFunction.includes("const MAX_SOURCES = 40"));
   assert.ok(dailyFunction.includes("const MAX_MESSAGES = 10"));
   assert.ok(dailyFunction.includes("selectDailyBrief"));
   assert.ok(

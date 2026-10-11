@@ -7,3 +7,7 @@ verify_jwt = false
 [functions.telegram-feedback]
 enabled = true
 verify_jwt = false
+
+[functions.reset-watch]
+enabled = true
+verify_jwt = false

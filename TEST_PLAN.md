@@ -7,6 +7,14 @@
 - A second run after one slot succeeds exits without sending again.
 - A successful morning run does not block the evening run.
 - The schedules represent 7 AM and 7 PM UAE time, each with two retries.
+- The Tibo reset watcher runs every ten minutes and does not trigger a full brief.
+- Reset announcements, confirmations, and banked-reset posts produce different advice.
+- Obvious reset polls, jokes, and unrelated Tibo posts do not send an alert.
+- The first watch run sends only the newest relevant state and silently records older states.
+- Two watch calls cannot send the same Tibo post twice.
+- Only exact `x.com/thsottiaux/status/...` links are accepted from discovery.
+- The fetched post ID, URL, and author must all match before an alert is sent.
+- A discovery service's title or summary is never presented as Tibo's words.
 - Titles containing `<`, `>`, `&`, or quotes display safely in Telegram.
 - A wrong cron secret is rejected.
 - A wrong Telegram webhook secret is rejected.

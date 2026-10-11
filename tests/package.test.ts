@@ -35,8 +35,15 @@ const communityDiscoveryMigration = readFileSync(
   ),
   "utf8",
 );
+const resetWatchMigration = readFileSync(
+  new URL(
+    "../supabase/migrations/202610110002_tibo_reset_watch.sql",
+    import.meta.url,
+  ),
+  "utf8",
+);
 const migration =
-  `${originalMigration}\n${adaptiveMigration}\n${twiceDailyMigration}\n${betterNewsMigration}\n${communityDiscoveryMigration}`;
+  `${originalMigration}\n${adaptiveMigration}\n${twiceDailyMigration}\n${betterNewsMigration}\n${communityDiscoveryMigration}\n${resetWatchMigration}`;
 const schedule = readFileSync(
   new URL("../supabase/setup_schedule.sql", import.meta.url),
   "utf8",
@@ -76,13 +83,24 @@ const telegramClient = readFileSync(
   new URL("../supabase/functions/_shared/telegram.ts", import.meta.url),
   "utf8",
 );
+const resetWatchFunction = readFileSync(
+  new URL("../supabase/functions/reset-watch/index.ts", import.meta.url),
+  "utf8",
+);
 
 test("every fetched feed is seeded by exact ID and URL", () => {
-  assert.equal(Object.keys(APPROVED_FEEDS).length, 31);
-  for (const [id, url] of Object.entries(APPROVED_FEEDS)) {
+  const scheduledBriefFeeds = Object.entries(APPROVED_FEEDS).filter(
+    ([id]) => id !== "tibo-reset-watch",
+  );
+  assert.equal(scheduledBriefFeeds.length, 31);
+  for (const [id, url] of scheduledBriefFeeds) {
     assert.ok(migration.includes(`'${id}'`), `migration is missing ${id}`);
     assert.ok(migration.includes(`'${url}'`), `migration is missing ${url}`);
   }
+  assert.equal(
+    APPROVED_FEEDS["tibo-reset-watch"],
+    "https://codexradar.com/feed.xml",
+  );
 });
 
 test("the adaptive brief can inspect every source and choose up to ten", () => {
@@ -125,11 +143,26 @@ test("external endpoints use their own in-code authentication", () => {
     config,
     /\[functions\.telegram-feedback\][\s\S]*?verify_jwt = false/,
   );
+  assert.match(config, /\[functions\.reset-watch\][\s\S]*?verify_jwt = false/);
   assert.ok(
     migration.includes(
       "revoke all on table public.news_items from anon, authenticated",
     ),
   );
+});
+
+test("the Tibo reset watch is bounded, scheduled, and duplicate-safe", () => {
+  assert.ok(schedule.includes("ai-news-tibo-reset-watch-10min"));
+  assert.ok(schedule.includes("'*/10 * * * *'"));
+  assert.ok(schedule.includes("'/functions/v1/reset-watch'"));
+  assert.ok(resetWatchMigration.includes("claim_reset_watch_alert"));
+  assert.ok(resetWatchMigration.includes("finish_reset_watch_alert"));
+  assert.ok(resetWatchMigration.includes("status in ('pending', 'failed')"));
+  assert.ok(resetWatchFunction.includes("MAX_POST_AGE_MS"));
+  assert.ok(resetWatchFunction.includes("fetchVerifiedTiboPost"));
+  assert.ok(resetWatchFunction.includes('row.status !== "failed"'));
+  assert.ok(resetWatchFunction.includes("newestUnseenResetPost"));
+  assert.ok(resetWatchFunction.includes("AmbiguousTelegramError"));
 });
 
 test("Telegram webhook accepts buttons and full-story replies", () => {

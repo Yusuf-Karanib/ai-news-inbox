@@ -189,7 +189,15 @@ async function fetchWithControlledRedirects(
         // Two official documentation feeds return a false 404 when a narrow
         // Accept header or Deno's default identifier is used. A normal generic
         // machine client request works for both and for the XML feeds.
-        "user-agent": "node",
+        "user-agent": source.id === "tibo-reset-watch"
+          ? "Yusuf-AI-News-Inbox/1.0"
+          : "node",
+        ...(source.id === "tibo-reset-watch"
+          ? {
+            accept:
+              "application/rss+xml, application/xml;q=0.9, text/xml;q=0.8",
+          }
+          : {}),
       },
     });
 

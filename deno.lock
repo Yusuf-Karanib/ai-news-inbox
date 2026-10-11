@@ -2,8 +2,7 @@
   "version": "5",
   "specifiers": {
     "npm:@supabase/supabase-js@2.107.0": "2.107.0",
-    "npm:fast-xml-parser@5.2.5": "5.2.5",
-    "npm:supabase@^2.116.0": "2.116.0"
+    "npm:fast-xml-parser@5.2.5": "5.2.5"
   },
   "npm": {
     "@ecies/ciphers@0.2.6_@noble+ciphers@1.3.0": {
@@ -165,7 +164,7 @@
   "workspace": {
     "packageJson": {
       "dependencies": [
-        "npm:supabase@^2.116.0"
+        "npm:supabase@^2.117.0"
       ]
     }
   }

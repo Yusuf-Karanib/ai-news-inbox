@@ -2,6 +2,10 @@
 
 This package sends up to ten useful stories to Telegram at **7:00 AM and 7:00 PM UAE time**.
 
+It also checks Tibo's public `@thsottiaux` posts every ten minutes for Codex
+reset announcements. A reset alert is separate from the news brief so Yusuf can
+protect a banked reset instead of learning about a global reset hours later.
+
 It uses:
 
 - Supabase Free for the schedule, code, and database.
@@ -95,8 +99,15 @@ to the complete article. It is not an AI-written investigation.
 The free Supabase plan can also pause a quiet project. This makes the package suitable for a free trial, but it is not a guaranteed-delivery service.
 
 Free, dependable monitoring of every employee post on X is not available. The
-official X API is paid, and unofficial mirrors are fragile. Yusuf can paste an
-important post into Telegram and teach the bot its topic.
+official X API is paid, and unofficial mirrors are fragile. This project makes
+one narrow exception requested by Yusuf. It uses
+[Codex Radar's public RSS feed](https://codexradar.com/feed.xml) to discover a
+possible reset post, then checks the exact post ID, author, text, and time
+through FxTwitter's public single-post endpoint. It ignores the discovery
+feed's wording and links every alert to Tibo's original X post. Both services
+are unofficial. If either free service stops working, the regular news briefs
+continue but reset alerts pause. Yusuf can still paste another important post
+into Telegram and teach the bot its topic.
 
 Instagram's official API does not provide a broad feed of ordinary personal
 accounts. It mainly supports connected Business and Creator accounts. The bot

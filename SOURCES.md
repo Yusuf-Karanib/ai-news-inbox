@@ -1,8 +1,9 @@
 # Included feeds
 
 The original 25 feeds were checked from the Supabase-compatible Deno runtime on
-8 September 2026. Four additional feeds were checked again on 13 September 2026. All
-29 returned usable content. They are fixed in both the database
+8 September 2026. Four additional feeds were checked again on 13 September 2026,
+and two community sources were checked on 11 October 2026. All 31 scheduled-news
+feeds returned usable content. They are fixed in both the database
 migrations and the code allowlist.
 
 | Source | What it covers | Important limit |
@@ -36,6 +37,24 @@ migrations and the code allowlist.
 | [Python Insider](https://blog.python.org/rss.xml) | CPython releases and core development | Does not cover all Python packages |
 | [ROS Announcements](https://discourse.openrobotics.org/c/ros/ros-announcements-news/112.rss) | ROS releases and official community notices | Some authors are community maintainers |
 | [Dubai Future Foundation](https://www.dubaifuture.ae/feed/) | UAE innovation, programmes, and occasional applications | Not a complete UAE opportunities list |
+| [DEV Community — Show DEV](https://dev.to/t/showdev) | Projects shared by individual builders | Community claims; not independently verified |
+| [Hacker News — Show HN](https://news.ycombinator.com/show) | Projects launched by individuals and small teams | Community claims; not independently verified |
+
+## Separate reset watch
+
+The bot also watches public reset posts from
+[Tibo (`@thsottiaux`)](https://x.com/thsottiaux) every ten minutes. This watch
+does not enter the normal ten-story brief. Only posts about global usage resets
+or banked resets can create an immediate Telegram alert, and every alert links
+to Tibo's original X post.
+
+[Codex Radar's public RSS feed](https://codexradar.com/feed.xml) is used only
+to discover an exact `x.com/thsottiaux/status/...` link. The bot does not trust
+or repeat the feed's wording. It fetches that one post through FxTwitter's
+public single-post endpoint and verifies the post ID, author, text, URL, and
+time before classification. Codex Radar and FxTwitter are free unofficial
+services and can stop working without warning. The official X API remains the
+reliable paid upgrade path.
 
 There is no invented UAE opportunity feed in this package. Useful pages from
 TII, Hub71, UAE Space Agency, MBZUAI, Khalifa University, NYU Abu Dhabi, and
@@ -47,6 +66,6 @@ The daily selector reserves one place for an opportunity. If these dependable
 feeds do not contain a current opportunity that passes the filters, it leaves
 that place empty and sends no more than nine other stories.
 
-There is also no dependable free feed for every X post. The official X API is
-paid and unofficial mirrors are fragile. Posts can be pasted into Telegram with
-a short topic description.
+There is no dependable free feed for every X post. The narrow Tibo reset watch
+does not change that limitation. Other posts can be pasted into Telegram with a
+short topic description.

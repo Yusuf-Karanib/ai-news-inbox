@@ -41,6 +41,7 @@ export const APPROVED_FEEDS: Readonly<Record<string, string>> = Object.freeze({
   "dubai-future-foundation": "https://www.dubaifuture.ae/feed/",
   "dev-showdev": "https://dev.to/feed/tag/showdev",
   "hacker-news-show": "https://hacker-news.firebaseio.com/v0/showstories.json",
+  "tibo-reset-watch": "https://codexradar.com/feed.xml",
 });
 
 export const COMMUNITY_DISCOVERY_SOURCE_IDS = new Set([

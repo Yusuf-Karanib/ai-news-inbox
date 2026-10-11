@@ -2,7 +2,8 @@
 -- Dubai is UTC+4 throughout the year:
 -- 03:00 UTC = 07:00 Dubai and 15:00 UTC = 19:00 Dubai.
 -- Each brief has retries after 15 and 45 minutes. A successful primary run
--- makes its later retries stop automatically.
+-- makes its later retries stop automatically. The separate Tibo reset watch
+-- checks every ten minutes and sends nothing when there is no new reset post.
 
 create extension if not exists pg_cron;
 create extension if not exists pg_net with schema extensions;
@@ -61,7 +62,8 @@ begin
       'ai-news-morning-retry-0745-dubai',
       'ai-news-evening-1900-dubai',
       'ai-news-evening-retry-1915-dubai',
-      'ai-news-evening-retry-1945-dubai'
+      'ai-news-evening-retry-1945-dubai',
+      'ai-news-tibo-reset-watch-10min'
     )
   loop
     perform cron.unschedule(v_job_id);
@@ -98,6 +100,23 @@ begin
       )
     );
   end loop;
+
+  perform cron.schedule(
+    'ai-news-tibo-reset-watch-10min',
+    '*/10 * * * *',
+    $command$
+      select net.http_post(
+        url := (select decrypted_secret from vault.decrypted_secrets where name = 'ai_news_project_url')
+          || '/functions/v1/reset-watch',
+        headers := jsonb_build_object(
+          'Content-Type', 'application/json',
+          'x-cron-secret', (select decrypted_secret from vault.decrypted_secrets where name = 'ai_news_cron_secret')
+        ),
+        body := jsonb_build_object('trigger', 'tibo_reset_watch'),
+        timeout_milliseconds := 30000
+      );
+    $command$
+  );
 end;
 $$;
 

@@ -42,7 +42,7 @@ Open PowerShell in this package, then run:
 ./tools/deploy.ps1
 ```
 
-The script installs a current free Supabase command-line tool, uses your saved sign-in when possible, applies the database migrations, and deploys both functions. It opens browser sign-in only when the saved sign-in no longer works. It does not store your Telegram token. On an existing installation, the twice-daily migration also replaces the old 7 PM-only schedule when the saved Vault values are present.
+The script installs a current free Supabase command-line tool, uses your saved sign-in when possible, applies the database migrations, and deploys all three functions. It opens browser sign-in only when the saved sign-in no longer works. It does not store your Telegram token. On an existing installation, the migrations preserve the twice-daily brief and add the ten-minute Tibo reset watch when the saved Vault values are present.
 
 ## 4. Turn on the 7 AM and 7 PM schedules
 
@@ -53,6 +53,10 @@ The script installs a current free Supabase command-line tool, uses your saved s
 5. Copy the `CRON_SECRET` value shown in the final result. Do not share or screenshot it.
 
 Each brief tries at 7:00, 7:15, and 7:45 AM or PM UAE time. Once a brief succeeds, its later attempts stop automatically. Morning and evening have separate locks, so one cannot block the other.
+
+The separate `@thsottiaux` reset watch runs every ten minutes. It sends nothing
+unless it finds a new reset-related post. An advance alert tells you to keep
+your banked reset; a completion alert tells you to check the Usage page first.
 
 ## 5. Add private secrets
 
@@ -155,8 +159,12 @@ arbitrary links.
   and other low-value technical filler. One place is reserved for a current
   opportunity; if none exists, the brief contains at most nine cards.
 - Reliable free monitoring of every X post is not available; X charges for API
-  reads. Instagram does not offer a broad ordinary-user discovery feed through
-  its official API. Paste important posts into the bot.
+  reads. Codex Radar's public RSS feed discovers possible Tibo reset posts, and
+  FxTwitter's public single-post endpoint verifies the exact post. Both are
+  unofficial. If either service fails, reset alerts pause while the normal news
+  briefs continue.
+  Instagram does not offer a broad ordinary-user discovery feed through its
+  official API. Paste other important posts into the bot.
 - An official announcement is evidence of what the organization announced, not proof that every claim is true.
 - The free local rules explain common technical words, but they cannot simplify every unusual term as well as a paid AI model.
 - “Full story” contains available source-feed details and the source article link; it is not a paid-AI analysis.
@@ -181,7 +189,8 @@ where jobname in (
   'ai-news-morning-retry-0745-dubai',
   'ai-news-evening-1900-dubai',
   'ai-news-evening-retry-1915-dubai',
-  'ai-news-evening-retry-1945-dubai'
+  'ai-news-evening-retry-1945-dubai',
+  'ai-news-tibo-reset-watch-10min'
 );
 ```
 

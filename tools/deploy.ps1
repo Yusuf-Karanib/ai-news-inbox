@@ -49,4 +49,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Deploying daily-news failed.' }
 & node.exe $supabaseCli functions deploy telegram-feedback --project-ref $projectRef --use-api --no-verify-jwt
 if ($LASTEXITCODE -ne 0) { throw 'Deploying telegram-feedback failed.' }
 
-Write-Host 'Deployment finished. Existing twice-daily schedules remain active. The older schedule upgrade runs only when needed and when its saved Vault values are found. New installations continue at step 4 in SETUP.md.'
+& node.exe $supabaseCli functions deploy reset-watch --project-ref $projectRef --use-api --no-verify-jwt
+if ($LASTEXITCODE -ne 0) { throw 'Deploying reset-watch failed.' }
+
+Write-Host 'Deployment finished. Existing twice-daily schedules remain active. The Tibo reset watch checks every ten minutes when its saved Vault values are found. New installations continue at step 4 in SETUP.md.'

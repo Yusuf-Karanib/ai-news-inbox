@@ -155,22 +155,28 @@ test("a readable AI publisher gets a place and security alerts are capped at one
   );
 });
 
-test("a scheduled brief reserves up to two places for community projects", () => {
+test("ordinary community projects are excluded from scheduled briefs", () => {
   nextId = 188;
   const projects = [
     item("hacker-news-show", ["community_projects", "ai_agents_automation"], 3),
     item("dev-showdev", ["community_projects", "developer_tools"], 3),
-    item("dev-showdev", ["community_projects", "applied_ai"], 3),
   ];
-  const regular = Array.from(
-    { length: 8 },
-    (_, index) => item(`regular-${index}`, ["ai_models_releases"], 4, index),
-  );
-  const selected = selectDailyBrief([...regular, ...projects], [], 10);
+  const selected = selectDailyBrief(projects, [], 10);
+  assert.equal(selected.length, 0);
+});
+
+test("at most one exceptional relevant community project can compete", () => {
+  nextId = 189;
+  const projects = [
+    item("hacker-news-show", ["community_projects", "ai_agents_automation"], 4),
+    item("dev-showdev", ["community_projects", "developer_tools"], 4),
+    item("dev-showdev", ["community_projects", "applied_ai"], 5),
+  ];
+  const selected = selectDailyBrief(projects, [], 10);
   assert.equal(
     selected.filter((entry) => entry.topic_tags.includes("community_projects"))
       .length,
-    2,
+    1,
   );
 });
 

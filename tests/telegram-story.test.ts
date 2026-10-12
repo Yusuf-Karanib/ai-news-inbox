@@ -214,7 +214,7 @@ test("card text safely escapes Telegram HTML", () => {
   assert.doesNotMatch(result, /<launch>|<model>/);
 });
 
-test("community projects are clearly labelled as unverified leads", () => {
+test("exceptional community projects are clearly labelled as unverified leads", () => {
   const community: NewsItemRow = {
     ...item,
     source_id: "hacker-news-show",
@@ -224,7 +224,7 @@ test("community projects are clearly labelled as unverified leads", () => {
     verification_status: "source_reported",
   };
   const result = formatNewsMessage(community, "Hacker News — Show HN", 1, 1);
-  assert.match(result, /^<b>People Are Building<\/b>/);
+  assert.match(result, /^<b>Notable Project<\/b>/);
   assert.match(result, /Here’s what’s happening:/);
   assert.match(result, /treat it as a lead, not a verified fact/);
 });

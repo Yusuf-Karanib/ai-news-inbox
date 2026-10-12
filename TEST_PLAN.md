@@ -47,6 +47,8 @@
 - Major AI announcements and major world-political events remain eligible.
 - A readable AI publisher gets a place when it has valuable news.
 - A single source supplies at most two cards, and security supplies at most one.
+- Ordinary community projects do not enter a scheduled brief.
+- At most one unusually important and directly relevant community project can enter.
 - A muted technical-news topic does not accidentally hide a matching internship.
 - Available Claude, OpenAI/Codex, NVIDIA/hardware, Grok, UAE, and other categories are included only when worthwhile.
 - Missing categories are replaced with stronger stories, and the brief never exceeds ten.

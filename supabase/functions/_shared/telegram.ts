@@ -149,7 +149,7 @@ export function newsTypeLabel(
   const isOpportunity = hasAny(topics, OPPORTUNITY_TOPICS) ||
     (item.is_opportunity && item.action === "investigate_further");
 
-  if (topics.has("community_projects")) return "People Are Building";
+  if (topics.has("community_projects")) return "Notable Project";
 
   if (
     SECURITY_NEWS_SOURCE_IDS.has(item.source_id) ||

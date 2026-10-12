@@ -137,7 +137,7 @@ arbitrary links.
 ## Short and full story views
 
 - Every card starts with a clear type: AI News, World News, UAE News,
-  Opportunity, People Are Building, Security News, Robotics News, or Tech News.
+  Opportunity, Notable Project, Security News, Robotics News, or Tech News.
 - The short card says “Here's what's happening” in simple language and links
   to the source instead of leading with a large headline.
   An opportunity also shows one reminder to check its deadline, cost,
@@ -153,8 +153,9 @@ arbitrary links.
 ## Important limits
 
 - Only fixed allowlisted feeds and public community sources are read
-  automatically. DEV Show DEV and Hacker News Show HN supply community-built
-  projects, with at most two places in a scheduled brief.
+  automatically. Ordinary DEV Show DEV and Hacker News Show HN projects are
+  excluded from scheduled briefs. At most one unusually important, directly
+  relevant project can appear.
 - Scheduled briefs reject resolved or routine outages, generic how-to guides,
   and other low-value technical filler. One place is reserved for a current
   opportunity; if none exists, the brief contains at most nine cards.

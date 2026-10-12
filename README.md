@@ -33,13 +33,13 @@ For balance, one source can take at most two places and security alerts can
 take at most one place. This prevents a single technical feed from dominating
 the brief.
 
-Up to two places are reserved for useful projects shared by individual
-developers or small teams. These currently come from DEV Community's
-**Show DEV** feed and Hacker News **Show HN**. They are labelled **People Are
-Building** and explicitly treated as leads, not verified facts.
+Projects shared by individual developers or small teams no longer receive a
+reserved place. They appear only when they score as unusually important and
+directly match Yusuf's interests, with at most one in a scheduled brief. A rare
+item that passes is labelled **Notable Project** and remains an unverified lead.
 
 Every card starts with a clear type such as **AI News**, **World News**, **UAE
-News**, **Opportunity**, **People Are Building**, or **Security News**. The
+News**, **Opportunity**, **Notable Project**, or **Security News**. The
 short version then says **Here's what's happening** in simple language instead
 of leading with a large headline. Opportunity cards also show one short
 reminder to check application details. The rating buttons remain, but the card

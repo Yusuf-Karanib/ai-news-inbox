@@ -39,6 +39,21 @@ const TECHNICAL_DETAIL_SOURCES = new Set([
 ]);
 const MEANINGFUL_HARDWARE_PATTERN =
   /\b(?:blackwell|rubin|jetson|new (?:ai )?(?:gpu|chip|hardware)|launch(?:es|ed)? .{0,60}(?:gpu|chip|hardware))\b/i;
+const EXCEPTIONAL_COMMUNITY_TOPICS = new Set<TopicId>([
+  "anthropic_claude",
+  "openai_chatgpt_codex",
+  "xai_grok",
+  "nvidia_ai_hardware",
+  "ai_models_releases",
+  "ai_agents_automation",
+  "developer_tools",
+  "python_apis",
+  "n8n",
+  "supabase",
+  "docker",
+  "react_nextjs",
+  "robotics_ros2",
+]);
 
 function itemTime(item: NewsItemRow): number {
   const published = item.published_at
@@ -83,6 +98,13 @@ function isValuable(item: NewsItemRow, scheduled: boolean): boolean {
     isGenericTechnicalGuide(item.title, item.summary)
   ) return false;
   if (!scheduled) return item.importance >= 2;
+  if (
+    item.topic_tags.includes("community_projects") &&
+    (
+      item.importance < 4 ||
+      !item.topic_tags.some((topic) => EXCEPTIONAL_COMMUNITY_TOPICS.has(topic))
+    )
+  ) return false;
   if (
     TECHNICAL_DETAIL_SOURCES.has(item.source_id) &&
     item.importance < 5 &&
@@ -138,6 +160,10 @@ export function selectDailyBrief(
   const canAdd = (item: NewsItemRow, enforceSourceLimit: boolean): boolean => {
     if (selectedIds.has(item.id)) return false;
     if (
+      scheduled && item.topic_tags.includes("community_projects") &&
+      selected.some((entry) => entry.topic_tags.includes("community_projects"))
+    ) return false;
+    if (
       scheduled &&
       item.topic_tags.includes("general_tech_security") &&
       selected.some((entry) =>
@@ -171,19 +197,6 @@ export function selectDailyBrief(
   );
   if (scheduled && readablePublisherItem && selected.length < targetSize) {
     add(readablePublisherItem.item);
-  }
-
-  // Keep two places for useful projects shared by individual developers or
-  // small teams. These are discovery leads, not automatically verified facts.
-  const communityDiscoveries = eligible.filter((candidate) =>
-    candidate.item.topic_tags.includes("community_projects") &&
-    canAdd(candidate.item, true)
-  ).slice(0, 2);
-  if (scheduled) {
-    for (const candidate of communityDiscoveries) {
-      if (selected.length >= targetSize) break;
-      if (canAdd(candidate.item, true)) add(candidate.item);
-    }
   }
 
   // Give readable AI news and major world news a chance before technical or

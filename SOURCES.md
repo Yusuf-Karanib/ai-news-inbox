@@ -37,8 +37,8 @@ migrations and the code allowlist.
 | [Python Insider](https://blog.python.org/rss.xml) | CPython releases and core development | Does not cover all Python packages |
 | [ROS Announcements](https://discourse.openrobotics.org/c/ros/ros-announcements-news/112.rss) | ROS releases and official community notices | Some authors are community maintainers |
 | [Dubai Future Foundation](https://www.dubaifuture.ae/feed/) | UAE innovation, programmes, and occasional applications | Not a complete UAE opportunities list |
-| [DEV Community — Show DEV](https://dev.to/t/showdev) | Projects shared by individual builders | Community claims; not independently verified |
-| [Hacker News — Show HN](https://news.ycombinator.com/show) | Projects launched by individuals and small teams | Community claims; not independently verified |
+| [DEV Community — Show DEV](https://dev.to/t/showdev) | Projects shared by individual builders | Ordinary projects are excluded; rare accepted items are unverified leads |
+| [Hacker News — Show HN](https://news.ycombinator.com/show) | Projects launched by individuals and small teams | Ordinary projects are excluded; rare accepted items are unverified leads |
 
 ## Separate reset watch
 

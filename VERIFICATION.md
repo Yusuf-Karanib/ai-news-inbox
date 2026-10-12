@@ -2,7 +2,7 @@
 
 Passed locally:
 
-- 99 rule, preference, search, community-discovery, reset-watch, adaptive-selection,
+- 100 rule, preference, search, community-discovery, reset-watch, adaptive-selection,
   delivery-safety, schedule, beginner-card, and configuration tests.
 - TypeScript syntax checks for every Edge Function file.
 - Real Deno type checks for all three Edge Function entry points and the live-feed checker with the pinned dependencies.

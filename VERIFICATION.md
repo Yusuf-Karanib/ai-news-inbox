@@ -31,10 +31,14 @@ Verified online on 11 October 2026:
 - The combined live check passed for all 31 scheduled-news sources plus the
   separate reset-discovery source.
 
-Still required to activate the Tibo reset watch on Yusuf's existing account:
+Activated on Yusuf's Supabase project on 13 October 2026:
 
-- Apply `202610110002_tibo_reset_watch.sql`.
-- Deploy the new `reset-watch` function plus the two shared-code consumers.
-- Trigger the watch once and confirm the newest relevant state arrives only once.
+- Migration `202610110002_tibo_reset_watch.sql` is present locally and remotely.
+- `daily-news` version 10, `telegram-feedback` version 10, and `reset-watch`
+  version 1 are active.
+- The reset-watch cron job is active every ten minutes.
+- A live check verified Tibo's exact post, classified the new global-reset
+  announcement, and Telegram accepted the alert.
+- An immediate second check returned no alert, confirming duplicate protection.
 
-The existing twice-daily deployment remains active while this update is deployed.
+The existing 7 AM and 7 PM schedules remain active.
